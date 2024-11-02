@@ -1,7 +1,7 @@
 import './App.css';
 
 function App() {
-  function createAppendForResults(el1, id, innerTexte, value) {
+  function createAppendForResults(el1, id, innerTexte, value, delay) {
     const divElement = document.createElement('div');
     divElement.id = id;
     divElement.className = "res-effect";
@@ -12,6 +12,10 @@ function App() {
     divElement.appendChild(h1Element);
     divElement.appendChild(pElement);
     el1.appendChild(divElement)
+
+    setTimeout(() => {
+      el1.classList.add('visible');
+    }, delay);
   }
 
   const solveCube = () => {
@@ -22,10 +26,10 @@ function App() {
     const resultContainer = document.getElementById('result-placer');
     resultContainer.innerHTML = '';
 
-    createAppendForResults(resultContainer, 'objective-score', 'Objective Score', 500);
-    createAppendForResults(resultContainer, 'jumlah-populasi', 'Population Amount', 500);
-    createAppendForResults(resultContainer, 'banyak-iterasi', 'Iterations', 500);
-    createAppendForResults(resultContainer, 'durasi-proses-pencarian', 'Searching Process Duration', 500);
+    createAppendForResults(resultContainer, 'objective-score', 'Objective Score', 500, 500);
+    createAppendForResults(resultContainer, 'jumlah-populasi', 'Population Amount', 500, 500);
+    createAppendForResults(resultContainer, 'banyak-iterasi', 'Iterations', 500, 500);
+    createAppendForResults(resultContainer, 'durasi-proses-pencarian', 'Searching Process Duration', 500, 500);
   }
 
   return (
