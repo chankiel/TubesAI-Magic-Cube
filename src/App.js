@@ -144,7 +144,7 @@ function App() {
                 Process
               </h2>
 
-              <div className="mx-[10%] flex rounded-3xl border-4 border-white mb-8">
+              <div className="mx-[10%] min-h-[300px] flex rounded-3xl border-4 border-white mb-8">
                 <div className="w-full h-full flex items-center justify-center">
                   {isSubmitted ? (
                     <D2Render
@@ -153,7 +153,7 @@ function App() {
                       idx2={processA[2]}
                     />
                   ) : (
-                    <p className="text-white text-xl">
+                    <p className="text-white text-xl mt-[130px]">
                       Submit to render the process
                     </p>
                   )}
