@@ -6,6 +6,7 @@
 
 using namespace std;
 
+#define NMAX 100000000
 #define MAX_SIDEWAYS 100
 #define MAX_RESTART 10
 #define SIMULATED_BOUND 0.5
@@ -79,7 +80,36 @@ DataFormat SideWaysMoveHC()
         current = neighbor;
     }
 
+    cout << "value: " << current.getStateValue() << endl;
+
     df.last_state = current.getMatrix();
+
+    return df;
+}
+
+DataFormat Stochastic()
+{
+    State current;
+    DataFormat df = {
+        .initial_state = current.getMatrix(),
+    };
+
+
+    for(int i = 0; i < NMAX; i++){
+        State neighbor = current.randomSucc();
+        df.objEachStep.push_back(neighbor.getStateValue());
+
+        if (neighbor.getStateValue() > current.getStateValue())
+        {
+            current = neighbor;
+        }
+
+    }
+
+    df.last_state = current.getMatrix();
+    // cout << "i: " << i << endl;
+    cout << "value:" << endl;
+    cout << current.getStateValue() << endl;
 
     return df;
 }
@@ -197,7 +227,8 @@ int main()
     auto start = chrono::high_resolution_clock::now();
 
     DataFormat df;
-    df = SideWaysMoveHC();
+    // df = SideWaysMoveHC();
+    df = Stochastic();
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, micro> duration = end - start;
