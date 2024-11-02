@@ -1,6 +1,6 @@
 import { useState } from "react";
 import "./App.css";
-import D3 from "./components/3D";
+import D2Render from "./components/2DRender";
 import D3Render from "./components/3DRender";
 import PlotChart from "./components/PlotChart";
 
@@ -9,7 +9,7 @@ function App() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
 
   // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
-  const threeDArray = Array.from({ length: 5 }, (_, layerIndex) =>
+  let threeDArray = Array.from({ length: 5 }, (_, layerIndex) =>
     Array.from({ length: 5 }, (_, rowIndex) =>
       Array.from(
         { length: 5 },
@@ -17,6 +17,35 @@ function App() {
       )
     )
   );
+
+  function flatten3DArray(array) {
+    if (
+      !Array.isArray(array) ||
+      array.length !== 5 ||
+      !array.every(
+        (layer) =>
+          Array.isArray(layer) &&
+          layer.length === 5 &&
+          layer.every((row) => Array.isArray(row) && row.length === 5)
+      )
+    ) {
+      throw new Error("Invalid input: must be a 5x5x5 array.");
+    }
+
+    const flatArray = [];
+
+    for (let x = 0; x < 5; x++) {
+      for (let y = 0; y < 5; y++) {
+        for (let z = 0; z < 5; z++) {
+          flatArray.push(array[x][y][z]);
+        }
+      }
+    }
+
+    return flatArray;
+  }
+
+  threeDArray = flatten3DArray(threeDArray);
 
   const twoDArray = Array.from({ length: 5 }, (_, rowIndex) =>
     Array.from({ length: 5 }, (_, cellIndex) => rowIndex * 5 + cellIndex + 1)
@@ -81,6 +110,26 @@ function App() {
               </div>
             </div>
           </div>
+
+          {selectedAlgorithm !== "Genetic Algorithm" && (
+            <div>
+              <h2 className="mx-[10%] text-4xl font-bold text-white mb-4">
+                Process
+              </h2>
+
+              <div className="mx-[10%] h-[800px] rounded-3xl border-4 border-white mb-8">
+                <div className="w-full h-full flex items-center justify-center">
+                  {isSubmitted ? (
+                    <D2Render array={threeDArray} />
+                  ) : (
+                    <p className="text-white text-xl">
+                      Submit to render the cube
+                    </p>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <h2 className="mx-[10%] text-4xl font-bold text-white mb-4">
             Initial State
