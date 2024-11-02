@@ -57,6 +57,33 @@ function App() {
     const j = Math.floor(Math.random() * (i + 1));
     [oneDArray[i], oneDArray[j]] = [oneDArray[j], oneDArray[i]];
   }
+
+  function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  }
+
+  const n = 5;
+  const processA = [
+    Array.from({ length: n }, () => {
+      const numbers = Array.from({ length: 125 }, (_, i) => i + 1);
+      shuffleArray(numbers);
+      return numbers;
+    }),
+
+    Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
+
+    Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
+  ];
+
+  processA[0].unshift(threeDArray);
+  processA[1].unshift(7);
+  processA[2].unshift(17);
+
+  // console.log(processA);
+  // console.log(threeDArray);
   // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
 
   const solveCube = () => {
@@ -117,13 +144,17 @@ function App() {
                 Process
               </h2>
 
-              <div className="mx-[10%] h-[800px] rounded-3xl border-4 border-white mb-8">
+              <div className="mx-[10%] flex rounded-3xl border-4 border-white mb-8">
                 <div className="w-full h-full flex items-center justify-center">
                   {isSubmitted ? (
-                    <D2Render array={threeDArray} />
+                    <D2Render
+                      array={processA[0]}
+                      idx1={processA[1]}
+                      idx2={processA[2]}
+                    />
                   ) : (
                     <p className="text-white text-xl">
-                      Submit to render the cube
+                      Submit to render the process
                     </p>
                   )}
                 </div>
