@@ -4,7 +4,6 @@ import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import * as THREE from "three";
 
-// Register TextGeometry with react-three-fiber
 extend({ TextGeometry });
 
 const Cube = () => {
@@ -13,9 +12,7 @@ const Cube = () => {
   useEffect(() => {
     const fontLoader = new FontLoader();
 
-    // Load the font
     fontLoader.load("/Roboto_Regular.json", (font) => {
-      // Create text geometries once the font is loaded
       const positions = [
         new THREE.Vector3(0, 0, 1.1),
         new THREE.Vector3(0, 0, -1.1),
@@ -42,24 +39,22 @@ const Cube = () => {
           curveSegments: 12,
           bevelEnabled: false,
         });
-        geometry.center(); // Center the text
+        geometry.center();
         const material = new THREE.MeshStandardMaterial({ color: "black" });
         const textMesh = new THREE.Mesh(geometry, material);
         textMesh.position.copy(position);
         textMesh.rotation.copy(rotations[index]);
-        mesh.current.add(textMesh); // Add text mesh to the cube
+        mesh.current.add(textMesh);
       });
     });
 
     return () => {
-      // Clean up: Remove all text meshes when the component unmounts
       while (mesh.current && mesh.current.children.length) {
         mesh.current.remove(mesh.current.children[0]);
       }
     };
   }, []);
 
-  // Rotate the cube on every frame
   useFrame(() => {
     if (mesh.current) {
       mesh.current.rotation.x += 0.01;

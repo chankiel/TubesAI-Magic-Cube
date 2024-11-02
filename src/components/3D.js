@@ -40,9 +40,7 @@ function NumberedBox({ position, number }) {
   useEffect(() => {
     const fontLoader = new FontLoader();
 
-    // Load the font
     fontLoader.load("/Roboto_Regular.json", (font) => {
-      // Create text geometries once the font is loaded
       const positions = [
         new THREE.Vector3(0, 0, 1),
         new THREE.Vector3(0, 0, -1),
@@ -69,17 +67,16 @@ function NumberedBox({ position, number }) {
           curveSegments: 12,
           bevelEnabled: false,
         });
-        geometry.center(); // Center the text
+        geometry.center();
         const material = new THREE.MeshStandardMaterial({ color: "black" });
         const textMesh = new THREE.Mesh(geometry, material);
         textMesh.position.copy(position);
         textMesh.rotation.copy(rotations[index]);
-        mesh.current.add(textMesh); // Add text mesh to the cube
+        mesh.current.add(textMesh);
       });
     });
 
     return () => {
-      // Clean up: Remove all text meshes when the component unmounts
       while (mesh.current && mesh.current.children.length) {
         mesh.current.remove(mesh.current.children[0]);
       }
@@ -111,7 +108,7 @@ function CubeGrid({ array }) {
         <NumberedBox
           key={i}
           position={[(x - 2) * 4, (-y + 2) * 4, (-z + 2) * 4]}
-          number={array[i]} // Using the element from the array
+          number={array[i]}
         />
       );
     }
@@ -137,7 +134,7 @@ function CubeGrid2({ array }) {
         <NumberedBox
           key={i}
           position={[(x - 2) * 2, (-y + 2) * 2, (-z + 2) * 2]}
-          number={array[i]} // Using the element from the array
+          number={array[i]}
         />
       );
     }
@@ -152,7 +149,7 @@ const D3 = ({ array }) => {
   const nextArray = flatten3DArray(array);
   console.log(nextArray);
   return (
-    <div className="h-1/2 w-1/2">
+    <div className="w-full h-full">
       <Canvas
         className="h-full w-full rounded-3xl"
         style={{ backgroundColor: "black" }}

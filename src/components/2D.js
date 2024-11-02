@@ -1,7 +1,6 @@
 import React from "react";
 
 const D2 = ({ array }) => {
-  // Ensure the input is a 5x5x5 array
   if (
     !Array.isArray(array) ||
     array.length !== 5 ||
@@ -18,7 +17,6 @@ const D2 = ({ array }) => {
 
   return (
     <div className="flex flex-col lg:flex-row space-y-6 my-16 w-screen">
-      {/* Map over each row and column, treating depth as the final dimension */}
       {Array.from({ length: 5 }, (_, rowIndex) => (
         <div
           key={rowIndex}
@@ -28,10 +26,8 @@ const D2 = ({ array }) => {
             Layer {rowIndex + 1}
           </h2>
           <div className="grid grid-cols-5 gap-2">
-            {/* Map through each column in this row */}
             {Array.from({ length: 5 }, (_, colIndex) => (
               <div key={`${rowIndex}-${colIndex}`} className="flex flex-col">
-                {/* For each depth layer (front to back), get the cell value */}
                 {array.map((layer, depthIndex) => (
                   <div
                     key={`${rowIndex}-${colIndex}-${depthIndex}`}
