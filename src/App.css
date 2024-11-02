@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
 }
@@ -9,7 +10,7 @@ html, body {
   width: 100vw;
   flex-direction: column;
   background-color: #3aafa9;
-  background-image: url("./../assets/background.jpg");
+  background-image: url("./../public/background.jpg");
   background-size: cover;
   background-attachment: fixed;
   background-position: center;
@@ -86,15 +87,15 @@ button.selectors:hover {
   margin-bottom: 0;
 }
 
-.form-texts h2  {
+.form-texts h2 {
   text-align: justify;
   font-weight: 200;
   font-size: 100%;
 }
 
-#input-form {
+/* #input-form {
   max-width: 500px;
-}
+} */
 
 .result-container {
   opacity: 0;
