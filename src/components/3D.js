@@ -146,8 +146,8 @@ function CubeGrid2({ array }) {
 }
 
 const D3 = ({ array }) => {
-  const nextArray = flatten3DArray(array);
-  console.log(nextArray);
+  // const nextArray = flatten3DArray(array);
+  const nextArray = array;
   return (
     <div className="w-full h-full">
       <Canvas
