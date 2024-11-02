@@ -1,38 +1,132 @@
+html, body {
+  height: 100%;
+  margin: 0;
+}
+
 .App {
   text-align: center;
-}
-
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
   display: flex;
+  width: 100vw;
   flex-direction: column;
+  background-color: #3aafa9;
+  background-image: url("./../assets/background.jpg");
+  background-size: cover;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: no-repeat;
+  box-sizing: border-box;
+  min-height: 100vh;
+}
+
+.input-container {
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
+}
+
+.header {
+  text-align: left;
+}
+
+.header h1 {
+  margin-left: 20px;
   color: white;
 }
 
-.App-link {
-  color: #61dafb;
+.input-result-container {
+  display: flex;
+  justify-content: space-between;
+  margin-left: 10%;
+  margin-right: 10%;
+  align-items: center;
+  margin-top: 120px;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.footer {
+  display: flex;
+  justify-content: end;
+  flex-direction: column;
+}
+
+.selectors {
+  border: 1px #17252a solid;
+  background-color: #00000066;
+  padding: 5px;
+  border-radius: 5px;
+  color: white;
+  font-family: Calibri;
+  font-size: 15px;
+}
+
+select.selectors {
+  text-align: left;
+  padding-right: 80px;
+}
+
+button.selectors {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+button.selectors:hover {
+  cursor: pointer;
+  color: #17252a;
+  background-color: #def2f1;
+}
+
+.form-texts {
+  color: white;
+  text-align: left;
+}
+
+.form-texts h1 {
+  font-size: 60px;
+  font-weight: 600;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.form-texts h2  {
+  text-align: justify;
+  font-weight: 200;
+  font-size: 100%;
+}
+
+#input-form {
+  max-width: 500px;
+}
+
+.result-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  color: white;
+  background-color: rgba(0, 0, 0, 0.289);
+  height: 100%;
+}
+
+.res-effect {
+  margin-right: 40px;
+  margin-left: 40px;
+}
+
+.res-effect h1 {
+  font-size: 40px;
+  margin-top: 15px;
+  margin-bottom: 20px;
+}
+
+.main-element {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+  height: 100%;
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
 }
