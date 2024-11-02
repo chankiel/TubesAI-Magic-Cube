@@ -10,9 +10,9 @@ private:
     int val;
 public:
     State();
+    State(int m[5][5][5]);
     string toString();
-    // State(int m[5][5][5]);
-    // int objectiveFunction();
+    int objectiveFunction();
     // void calculateBuffer();
     // void updateBuffer(i,j,k,newVal,oldVal);
     // State highestValuedSucc();
