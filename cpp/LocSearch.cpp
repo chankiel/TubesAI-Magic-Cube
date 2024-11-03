@@ -114,6 +114,43 @@ DataFormat SideWaysMoveHC()
     return df;
 }
 
+DataFormat RandomRestartHC(int maxRestart) {
+    State current;
+    int stateVal = current.getStateValue();
+    DataFormat df = {
+        .initial_state = current.getMatrix(),
+    };
+    DataFormat df2 = {
+        .initial_state = current.getMatrix(),
+    };
+    for (int i = 0; i < maxRestart; i++) {
+        while (true) {
+            State neighbor = current.highestValuedSucc();
+            df.objEachStep.push_back(neighbor.getStateValue());
+
+            if (neighbor.getStateValue() >= current.getStateValue()) {
+                break;
+            }
+            current = neighbor;
+        }
+        df.numRestarts = i+1;
+        df2.numRestarts = i+1;
+        df.last_state = current.getMatrix();
+        if (current.getStateValue() < stateVal) {
+            df2.initial_state = df.initial_state;
+            df2.last_state = df.last_state;
+            df2.objEachStep = df.objEachStep;
+            df2.plotSimulated = df.plotSimulated;
+            df2.duration = df.duration;
+            stateVal = current.getStateValue();
+            if (stateVal == 0) {
+                return df2;
+            }
+        }
+    }
+    return df2;
+}
+
 DataFormat Stochastic()
 {
     State current;
@@ -284,7 +321,8 @@ int main()
     // df = SteepestAscentHC(matrix);
     // df = SteepestAscentHC();
     // df = SteepestAscentHC();
-    df = Stochastic();
+    df = RandomRestartHC(5);
+    // df = Stochastic();
     // df = SimulatedAnnealing();
 
     auto end = chrono::high_resolution_clock::now();
