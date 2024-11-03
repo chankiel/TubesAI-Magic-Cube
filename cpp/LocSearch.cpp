@@ -87,6 +87,43 @@ DataFormat SideWaysMoveHC()
     return df;
 }
 
+DataFormat RandomRestartHC(int maxRestart) {
+    State current;
+    int stateVal = current.getStateValue();
+    DataFormat df = {
+        .initial_state = current.getMatrix(),
+    };
+    DataFormat df2 = {
+        .initial_state = current.getMatrix(),
+    };
+    for (int i = 0; i < maxRestart; i++) {
+        while (true) {
+            State neighbor = current.highestValuedSucc();
+            df.objEachStep.push_back(neighbor.getStateValue());
+
+            if (neighbor.getStateValue() >= current.getStateValue()) {
+                break;
+            }
+            current = neighbor;
+        }
+        df.numRestarts = i+1;
+        df2.numRestarts = i+1;
+        df.last_state = current.getMatrix();
+        if (current.getStateValue() < stateVal) {
+            df2.initial_state = df.initial_state;
+            df2.last_state = df.last_state;
+            df2.objEachStep = df.objEachStep;
+            df2.plotSimulated = df.plotSimulated;
+            df2.duration = df.duration;
+            stateVal = current.getStateValue();
+            if (stateVal == 0) {
+                return df2;
+            }
+        }
+    }
+    return df2;
+}
+
 DataFormat Stochastic()
 {
     State current;
@@ -181,3 +218,94 @@ DataFormat SimulatedAnnealing()
 // }
 
 // }
+
+void readMatrixFromFile(const string &filename, vector<int> &matrix)
+{
+    ifstream file(filename);
+
+    if (!file)
+    {
+        cerr << "Error opening file " << filename << endl;
+        return;
+    }
+
+    matrix.resize(125);
+
+    int idx = 0;
+    for (int i = 0; i < 5; ++i)
+    {
+        for (int j = 0; j < 5; ++j)
+        {
+            for (int k = 0; k < 5; ++k)
+            {
+                file >> matrix[idx];
+                idx++;
+                if (file.fail())
+                {
+                    cerr << "Error reading data from file" << endl;
+                    return;
+                }
+            }
+        }
+    }
+
+    file.close();
+}
+
+void displayMatrix(vector<int> &matriks)
+{
+    int idx = 0;
+    for (int i = 0; i < 5; ++i)
+    {
+        for (int j = 0; j < 5; ++j)
+        {
+            for (int k = 0; k < 5; ++k)
+            {
+                cout << matriks[idx] << " ";
+                idx++;
+            }
+            cout << endl;
+        }
+        cout << endl;
+    }
+}
+
+// State RandomRestartHC()
+// {
+//     State current =
+//     int i=0;
+//     bool found = false;
+//     while(n)
+// }
+
+int main()
+{
+    srand(time(0));
+    vector<int> matrix(125, 0);
+
+    readMatrixFromFile("matrix.txt", matrix);
+    auto start = chrono::high_resolution_clock::now();
+
+    DataFormat df;
+    // df = SteepestAscentHC(matrix);
+    // df = SteepestAscentHC();
+    // df = SteepestAscentHC();
+    df = RandomRestartHC(5);
+    // df = Stochastic();
+    // df = SimulatedAnnealing();
+
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double, micro> duration = end - start;
+
+    cout << "INITIAL STATE: " << endl;
+    displayMatrix(df.initial_state);
+
+    cout << endl
+         << "---------------------------------------------------------------------\nLAST STATE: " << endl;
+    displayMatrix(df.last_state);
+    cout << endl
+         << "EXECUTION TIME: " << (float)duration.count() / 1000000 << "s" << endl;
+    cout << "OBJ FUNCTION: " << df.objEachStep[df.objEachStep.size() - 1];
+    cout << endl
+         << df.objEachStep.size() << endl;
+}
