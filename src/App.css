@@ -1,21 +1,31 @@
+@import url("./assets/kanit.css");
+
 html,
 body {
   height: 100%;
   margin: 0;
 }
 
+#tsparticles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  min-height: 100%;
+  z-index: -1; /* Send it behind the header and main */
+}
+
 .App {
   text-align: center;
   display: flex;
-  width: 100vw;
   flex-direction: column;
-  background-color: #3aafa9;
+  /* background-color: #3aafa9;
   background-image: url("./../public/background.jpg");
   background-size: cover;
   background-attachment: fixed;
   background-position: center;
   background-repeat: no-repeat;
-  box-sizing: border-box;
+  box-sizing: border-box; */
   min-height: 100vh;
 }
 
@@ -30,8 +40,11 @@ body {
 }
 
 .header h1 {
-  margin-left: 20px;
+  margin-left: 30px;
+  margin-top: 15px;
   color: white;
+  font-family: 'Kanit';
+  font-size: 35px;
 }
 
 .input-result-container {
@@ -62,11 +75,13 @@ body {
 select.selectors {
   text-align: left;
   padding-right: 80px;
+  border: 1px white solid
 }
 
 button.selectors {
   padding-left: 20px;
   padding-right: 20px;
+  border: 1px white solid;
 }
 
 button.selectors:hover {
@@ -85,6 +100,7 @@ button.selectors:hover {
   font-weight: 600;
   margin-top: 0;
   margin-bottom: 0;
+  font-family: 'Kanit';
 }
 
 .form-texts h2 {
