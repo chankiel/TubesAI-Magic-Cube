@@ -15,6 +15,7 @@ typedef struct
     vector<int> initial_state;
     vector<int> last_state;
     vector<int> objEachStep;
+    vector<int> plotSimulated;
     float duration;
     int numRestarts;
 } DataFormat;
@@ -33,7 +34,7 @@ DataFormat SteepestAscentHC()
         State neighbor = current.highestValuedSucc();
         df.objEachStep.push_back(neighbor.getStateValue());
 
-        if (neighbor.getStateValue() <= current.getStateValue())
+        if (neighbor.getStateValue() >= current.getStateValue())
         {
             break;
         }
@@ -41,6 +42,32 @@ DataFormat SteepestAscentHC()
         current = neighbor;
     }
 
+    df.last_state = current.getMatrix();
+
+    return df;
+}
+
+DataFormat SteepestAscentHC(vector<int> &m)
+{
+    State current(m);
+    DataFormat df = {
+        .initial_state = current.getMatrix(),
+    };
+    bool did = false;
+    while (true && !did)
+    {
+        State neighbor = current.highestValuedSucc();
+        df.objEachStep.push_back(neighbor.getStateValue());
+        if (neighbor.getStateValue() >= current.getStateValue())
+        {
+            break;
+        }
+
+        current = neighbor;
+        did = true;
+    }
+
+    cout << "State Value: " << current.getStateValue() << endl;
     df.last_state = current.getMatrix();
 
     return df;
@@ -59,7 +86,7 @@ DataFormat SideWaysMoveHC()
         State neighbor = current.highestValuedSucc();
         df.objEachStep.push_back(neighbor.getStateValue());
 
-        if (neighbor.getStateValue() < current.getStateValue())
+        if (neighbor.getStateValue() > current.getStateValue())
         {
             break;
         }
@@ -84,15 +111,14 @@ DataFormat SideWaysMoveHC()
     return df;
 }
 
-int schedule(int t)
+double schedule(int t)
 {
-    double x = 100 - 7.2 * log(t);
-    return x > 0 ? x : 0;
+    double x = 50000 * pow(0.95, t);
+    return x;
 }
 
 DataFormat SimulatedAnnealing()
 {
-    srand(time(0));
     State current;
     DataFormat df = {
         .initial_state = current.getMatrix(),
@@ -102,41 +128,69 @@ DataFormat SimulatedAnnealing()
     while (true)
     {
         double T = schedule(t);
-        if(T == 0) break;
+        if (T <= 0.01)
+            break;
         State neighbor = current.randomSucc();
         df.objEachStep.push_back(neighbor.getStateValue());
 
         double deltaE = neighbor.getStateValue() - current.getStateValue();
-        if(deltaE > 0){
+        if (deltaE < 0)
+        {
             current = neighbor;
-        } else{
-            if(exp(deltaE/T) >= MAX_SIDEWAYS){
+        }
+        else
+        {
+            if (exp((-1 * deltaE) / T) >= SIMULATED_BOUND)
+            {
+                // cout<<exp((-1*deltaE) / T)<<" "<<deltaE<<" "<<T<<endl;
                 current = neighbor;
             }
         }
+
+        t++;
     }
 
     df.last_state = current.getMatrix();
     return df;
 }
 
-// DataFormat GeneticAlgorithm(){
-//     State current;
-//     DataFormat df = {
-//         .initial_state = current.getMatrix(),
-//     };
+// int randomSelectionGenetic(vector<State>& population, int totalValue, int nPopulation){
+//     double random_prob = (rand() % 101) / 100;
+//     double iterator_prob = 0;
+//     for(int i=0;i<nPopulation;i++){
+//         double state_prob = population[i].getStateValue()/totalValue;
+//         if(state_prob >= random_prob - iterator_prob){
+//             return i;
+//         }
+//         iterator_prob += state_prob;
+//     }
+// }
 
+// DataFormat GeneticAlgorithm(int nPopulation, int nIterasi){
+//     vector<State> population;
+//     for(int i=0;i<nPopulation;i++){
+//         State state;
+//         population.push_back(state);
+//     }
+
+//     int it = 0;
+//     do{
+//         vector<State> newPopulation;
+//         for(int i=0;i<nPopulation;i++){
+
+//         }
+//     }while();
 // }
 
 // }
 
-void readMatrixFromFile(const std::string &filename, vector<int> &matrix)
+void readMatrixFromFile(const string &filename, vector<int> &matrix)
 {
-    std::ifstream file(filename);
+    ifstream file(filename);
 
     if (!file)
     {
-        std::cerr << "Error opening file " << filename << std::endl;
+        cerr << "Error opening file " << filename << endl;
         return;
     }
 
@@ -153,7 +207,7 @@ void readMatrixFromFile(const std::string &filename, vector<int> &matrix)
                 idx++;
                 if (file.fail())
                 {
-                    std::cerr << "Error reading data from file" << std::endl;
+                    cerr << "Error reading data from file" << endl;
                     return;
                 }
             }
@@ -191,13 +245,17 @@ void displayMatrix(vector<int> &matriks)
 
 int main()
 {
+    srand(time(0));
     vector<int> matrix(125, 0);
 
     readMatrixFromFile("matrix.txt", matrix);
     auto start = chrono::high_resolution_clock::now();
 
     DataFormat df;
-    df = SideWaysMoveHC();
+    // df = SteepestAscentHC(matrix);
+    // df = SteepestAscentHC();
+    df = SteepestAscentHC();
+    // df = SimulatedAnnealing();
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double, micro> duration = end - start;
@@ -210,4 +268,7 @@ int main()
     displayMatrix(df.last_state);
     cout << endl
          << "EXECUTION TIME: " << (float)duration.count() / 1000000 << "s" << endl;
+    cout << "OBJ FUNCTION: " << df.objEachStep[df.objEachStep.size() - 1];
+    cout << endl
+         << df.objEachStep.size() << endl;
 }

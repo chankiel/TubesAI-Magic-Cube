@@ -29,7 +29,7 @@ public:
     vector<int> diaRuangIndexes(int, int, int);
 
     void calculateBuffer();
-    void updateBuffer(int, int, int, int, int);
+    void updateBuffer(int, int, int, int, int, int);
 
     int objectiveFunction();
 

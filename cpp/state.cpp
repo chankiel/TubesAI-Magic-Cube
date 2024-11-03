@@ -3,9 +3,11 @@
 #include <ctime>     // time
 #include <algorithm> // shuffle
 #include <sstream>   // tostring
+#include <cmath>
 
-int getVectorIndex(int i,int j,int k){
-    return (25*i+5*j+k);
+int getVectorIndex(int i, int j, int k)
+{
+    return (25 * i + 5 * j + k);
 }
 
 /*-------------------- CONSTRUCTOR -----------------------*/
@@ -19,19 +21,18 @@ State::State()
 
     for (int i = 0; i < 125; i++)
     {
-        matriks.push_back(i+1);
+        matriks.push_back(i + 1);
     }
 
-    srand(static_cast<unsigned>(time(0)));
     random_shuffle(matriks.begin(), matriks.end());
 
     this->calculateBuffer();
     this->val = this->objectiveFunction();
 }
 
-State::State(vector<int>& m)
+State::State(vector<int> &m)
 {
-    matriks = m;    
+    matriks = m;
 
     buffer[0] = vector<int>(25, 0);
     buffer[1] = vector<int>(25, 0);
@@ -57,13 +58,13 @@ State::State(const State &state) : val(state.val)
 
 int State::getElement(int i, int j, int k)
 {
-    int idx = getVectorIndex(i,j,k);
+    int idx = getVectorIndex(i, j, k);
     return this->matriks[idx];
 }
 
 void State::setElement(int i, int j, int k, int val)
 {
-    int idx = getVectorIndex(i,j,k);
+    int idx = getVectorIndex(i, j, k);
     this->matriks[idx] = val;
 }
 
@@ -72,7 +73,8 @@ int State::getStateValue()
     return this->val;
 }
 
-vector<int> State::getMatrix(){
+vector<int> State::getMatrix()
+{
     return this->matriks;
 }
 
@@ -179,72 +181,96 @@ vector<int> State::diaRuangIndexes(int i, int j, int k)
 
 /*-------------------- BUFFER METHODS -----------------------*/
 
-void State::updateBuffer(int i, int j, int k, int newVal, int oldVal)
+void State::updateBuffer(int i1, int j1, int k1, int i2 = -1, int j2 = -1, int k2 = -1)
 {
-    int diffVal = newVal - oldVal;
-    if (diffVal == 0)
+    bool isSwap = i2 != -1;
+    int val1 = this->getElement(i1, j1, k1);
+    int val2 = isSwap ? this->getElement(i2, j2, k2) : -1;
+    int diffVal = val1 - val2;
+
+    int row1_idx = i1 + 5 * k1;
+    if (!isSwap)
     {
-        return;
+        buffer[0][row1_idx] += val1;
+    }
+    else
+    {
+        int row2_idx = i2 + 5 * k2;
+        this->val += 2 * diffVal * (buffer[0][row2_idx] - buffer[0][row1_idx] + diffVal);
+        buffer[0][row1_idx] -= diffVal;
+        buffer[0][row2_idx] += diffVal;
     }
 
-    int row_idx = i + 5 * k;
-
-    // if(row_idx==0){
-    //     cout<<i<<" "<<j<<" "<<k<<endl;
-    // }
-
-    buffer[0][row_idx] += diffVal;
-    if (buffer[0][row_idx] == MAGIC_NUMBER)
-        this->val += 1;
-    if (buffer[0][row_idx] - diffVal == MAGIC_NUMBER)
-        this->val -= 1;
-
-    int col_idx = j + 5 * k;
-    buffer[1][col_idx] += diffVal;
-    if (buffer[1][col_idx] == MAGIC_NUMBER)
-        this->val += 1;
-    if (buffer[1][col_idx] - diffVal == MAGIC_NUMBER)
-        this->val -= 1;
-
-    int tiang_idx = i + 5 * j;
-    // if(tiang_idx==0){
-    //     cout<<i<<" "<<j<<" "<<k<<endl;
-    // }
-    buffer[2][tiang_idx] += diffVal;
-    if (buffer[2][tiang_idx] == MAGIC_NUMBER)
-        this->val += 1;
-    if (buffer[2][tiang_idx] - diffVal == MAGIC_NUMBER)
-        this->val -= 1;
-
-    vector<int> bidang_indexes = this->diaBidangIndexes(i, j, k);
-
-    // if(find(bidang_indexes.begin(),bidang_indexes.end(), 0) != bidang_indexes.end()){
-    //     cout<<i<<" "<<j<<" "<<k<<endl;
-    // }
-
-    for (int bidang_idx : bidang_indexes)
+    int col1_idx = j1 + 5 * k1;
+    if (!isSwap)
     {
-        this->buffer[3][bidang_idx] += diffVal;
-        if (buffer[3][bidang_idx] == MAGIC_NUMBER)
-            this->val += 1;
-        if (buffer[3][bidang_idx] - diffVal == MAGIC_NUMBER)
-
-            this->val -= 1;
+        buffer[1][col1_idx] += val1;
+    }
+    else
+    {
+        int col2_idx = j2 + 5 * k2;
+        this->val += 2 * diffVal * (buffer[1][col2_idx] - buffer[1][col1_idx] + diffVal);
+        buffer[1][col1_idx] -= diffVal;
+        buffer[1][col2_idx] += diffVal;
     }
 
-    vector<int> ruang_indexes = this->diaRuangIndexes(i, j, k);
-
-    // if(find(ruang_indexes.begin(),ruang_indexes.end(), 2) != ruang_indexes.end()){
-    //     cout<<i<<" "<<j<<" "<<k<<endl;
-    // }
-
-    for (int idx : ruang_indexes)
+    int tiang1_idx = i1 + 5 * j1;
+    if (!isSwap)
     {
-        this->buffer[4][idx] += diffVal;
-        if (buffer[4][idx] == MAGIC_NUMBER)
-            this->val += 1;
-        if (buffer[4][idx] - diffVal == MAGIC_NUMBER)
-            this->val -= 1;
+        buffer[2][tiang1_idx] += val1;
+    }
+    else
+    {
+        int tiang2_idx = i2 + 5 * j2;
+        this->val += 2 * diffVal * (buffer[2][tiang2_idx] - buffer[2][tiang1_idx] + diffVal);
+        buffer[2][tiang1_idx] -= diffVal;
+        buffer[2][tiang2_idx] += diffVal;
+    }
+
+    vector<int> bidang1_indexes = this->diaBidangIndexes(i1, j1, k1);
+    if (!isSwap)
+    {
+        for (int bidang1_idx : bidang1_indexes)
+        {
+            this->buffer[3][bidang1_idx] += val1;
+        }
+    }
+    else
+    {
+        vector<int> bidang2_indexes = this->diaBidangIndexes(i2, j2, k2);
+        for (int bidang1_idx : bidang1_indexes)
+        {
+            this->val += (630 - 2 * buffer[3][bidang1_idx] + diffVal) * diffVal;
+            this->buffer[3][bidang1_idx] -= diffVal;
+        }
+        for (int bidang2_idx : bidang2_indexes)
+        {
+            this->val -= (630 - 2 * buffer[3][bidang2_idx] - diffVal) * diffVal;
+            this->buffer[3][bidang2_idx] += diffVal;
+        }
+    }
+
+    vector<int> ruang1_indexes = this->diaRuangIndexes(i1, j1, k1);
+    if (!isSwap)
+    {
+        for (int ruang1_idx : ruang1_indexes)
+        {
+            this->buffer[4][ruang1_idx] += val1;
+        }
+    }
+    else
+    {
+        vector<int> ruang2_indexes = this->diaRuangIndexes(i2, j2, k2);
+        for (int ruang1_idx : ruang1_indexes)
+        {
+            this->val += (630 - 2 * buffer[4][ruang1_idx] + diffVal) * diffVal;
+            this->buffer[4][ruang1_idx] -= diffVal;
+        }
+        for (int ruang2_idx : ruang2_indexes)
+        {
+            this->val -= (630 - 2 * buffer[4][ruang2_idx] - diffVal) * diffVal;
+            this->buffer[4][ruang2_idx] += diffVal;
+        }
     }
 }
 
@@ -257,7 +283,7 @@ void State::calculateBuffer()
         {
             for (int k = 0; k < 5; k++)
             {
-                this->updateBuffer(i, j, k, this->matriks[idx], 0);
+                this->updateBuffer(i, j, k);
                 idx++;
             }
         }
@@ -274,10 +300,7 @@ int State::objectiveFunction()
     {
         for (int segment : vec)
         {
-            if (segment == 315)
-            {
-                result++;
-            }
+            result += pow((segment - MAGIC_NUMBER), 2);
         }
     }
     return result;
@@ -285,15 +308,14 @@ int State::objectiveFunction()
 
 /*-------------------- SUCCESSOR METHODS -----------------------*/
 
-State State::generateSucc(int i1, int i2, int j1, int j2, int k1, int k2)
+State State::generateSucc(int i1, int j1, int k1, int i2, int j2, int k2)
 {
     State succ(*this);
     int val1 = this->getElement(i1, j1, k1), val2 = this->getElement(i2, j2, k2);
+
+    succ.updateBuffer(i1, j1, k1, i2, j2, k2);
     succ.setElement(i1, j1, k1, val2);
     succ.setElement(i2, j2, k2, val1);
-
-    succ.updateBuffer(i1, j1, k1, val2, val1);
-    succ.updateBuffer(i2, j2, k2, val1, val2);
 
     return succ;
 }
@@ -310,8 +332,13 @@ State State::highestValuedSucc()
                 for (int l = (25 * i + 5 * j + k + 1); l < 125; l++)
                 {
                     int iSucc = l / 25, jSucc = (l % 25) / 5, kSucc = l % 5;
-                    State succ = this->generateSucc(i, iSucc, j, jSucc, k, kSucc);
-                    if (succ.getStateValue() > bestState.getStateValue())
+                    State succ = this->generateSucc(i, j, k, iSucc, jSucc, kSucc);
+                    if(succ.getStateValue()<0){
+                        cout<<i<<", "<<j<<", "<<k<<endl;
+                        cout<<iSucc<<", "<<jSucc<<", "<<kSucc<<endl;
+                        cout<<succ.getStateValue()<<endl;
+                    }
+                    if (succ.getStateValue() < bestState.getStateValue())
                     {
                         bestState = succ;
                     }
@@ -325,8 +352,6 @@ State State::highestValuedSucc()
 
 State State::randomSucc()
 {
-    srand(time(0));
-
     int arr1[3], arr2[3];
     do
     {
@@ -335,10 +360,11 @@ State State::randomSucc()
             arr1[i] = rand() % 5;
             arr2[i] = rand() % 5;
         }
-    } while (!(arr1[0] == arr2[0] && arr1[1] == arr2[1] && arr1[2] == arr2[2]));
+    } while ((arr1[0] == arr2[0] && arr1[1] == arr2[1] && arr1[2] == arr2[2]));
+    State neighbor = this->generateSucc(arr1[0], arr1[1], arr1[2], arr2[0], arr2[1], arr2[2]);
 
-    State neighbor = this->generateSucc(arr1[0], arr2[0], arr1[1], arr2[1], arr1[2], arr2[2]);
-
+    // cout<<arr1[0] << arr2[0] << arr1[1] << arr2[1] << arr1[2] << arr2[2]<<endl;
+    // cout<<"BEFORE: "<<this->objectiveFunction()<<endl<<"AFTER: "<<neighbor.objectiveFunction()<<endl;
     return neighbor;
 }
 
