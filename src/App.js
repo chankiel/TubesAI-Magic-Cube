@@ -5,38 +5,18 @@ import D2Render from "./components/2DRender";
 import D3Render from "./components/3DRender";
 import PlotChart from "./components/PlotChart";
 import "./assets/kanit.css";
-import { useCallback } from "react";
-import Particles from "react-tsparticles";
-import { loadSlim } from "tsparticles-slim";
+import LoadingModal from "./components/LoadingModal";
+import Particlebg from "./components/Particlebg";
 
 function App() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [maxRes, setMaxRes] = useState(5);
+  const [population, setPopulation] = useState(10);
+  const [iterGA, setIterGA] = useState(5);
 
-  const particlesInit = useCallback(async (engine) => {
-    console.log(engine);
-    await loadSlim(engine);
-  }, []);
-
-  const particlesLoaded = useCallback(async (container) => {
-    await console.log(container);
-  }, []);
-
-  useEffect(() => {
-    const tsparticles = document.getElementById("tsparticles");
-    tsparticles.style.height = `${document.documentElement.scrollHeight}px`;
-  }, []);
-
-  // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
-  let threeDArray = Array.from({ length: 5 }, (_, layerIndex) =>
-    Array.from({ length: 5 }, (_, rowIndex) =>
-      Array.from(
-        { length: 5 },
-        (_, cellIndex) => layerIndex * 25 + rowIndex * 5 + cellIndex + 1
-      )
-    )
-  );
-
+  // -----------------------------------------------------------------------------------------
   function flatten3DArray(array) {
     if (
       !Array.isArray(array) ||
@@ -64,19 +44,6 @@ function App() {
     return flatArray;
   }
 
-  threeDArray = flatten3DArray(threeDArray);
-
-  const twoDArray = Array.from({ length: 5 }, (_, rowIndex) =>
-    Array.from({ length: 5 }, (_, cellIndex) => rowIndex * 5 + cellIndex + 1)
-  );
-
-  const oneDArray = Array.from({ length: 30 }, (_, index) => index + 1);
-
-  for (let i = oneDArray.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [oneDArray[i], oneDArray[j]] = [oneDArray[j], oneDArray[i]];
-  }
-
   function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -84,150 +51,87 @@ function App() {
     }
   }
 
-  const n = 5;
-  const processA = [
-    Array.from({ length: n }, () => {
-      const numbers = Array.from({ length: 125 }, (_, i) => i + 1);
-      shuffleArray(numbers);
-      return numbers;
-    }),
+  let threeDArray = Array.from({ length: 5 }, (_, layerIndex) =>
+    Array.from({ length: 5 }, (_, rowIndex) =>
+      Array.from(
+        { length: 5 },
+        (_, cellIndex) => layerIndex * 25 + rowIndex * 5 + cellIndex + 1
+      )
+    )
+  );
 
-    Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
+  threeDArray = flatten3DArray(threeDArray);
 
-    Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
-  ];
+  const [processA, setProcessA] = useState([
+    [threeDArray, threeDArray],
+    [1, 3],
+    [6, 7],
+  ]);
+  const [oneDArray, setOneDArray] = useState([0, 9, 1, 2]);
 
-  processA[0].unshift(threeDArray);
-  processA[1].unshift(7);
-  processA[2].unshift(17);
+  console.log("old");
+  console.log(processA);
 
-  // console.log(processA);
-  // console.log(threeDArray);
-  // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
+  // useEffect(() => {
+  //   console.log("Value of myVariable before proceeding:", processA);
+  // }, [processA]);
+  // -----------------------------------------------------------------------------------------
 
-  const solveCube = () => {
+  const solveCube = async () => {
+    setIsSubmitted(false);
+    setLoading(true);
+
+    // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
+
+    let oneDArray_in = Array.from({ length: 30 }, (_, index) => index + 1);
+
+    for (let i = oneDArray.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [oneDArray[i], oneDArray[j]] = [oneDArray[j], oneDArray[i]];
+    }
+
+    const n = 5;
+    let processA_in = [
+      Array.from({ length: n }, () => {
+        const numbers = Array.from({ length: 125 }, (_, i) => i + 1);
+        shuffleArray(numbers);
+        return numbers;
+      }),
+
+      Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
+
+      Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
+    ];
+
+    processA_in[0].unshift(threeDArray);
+    processA_in[1].unshift(7);
+    processA_in[2].unshift(17);
+
+    setProcessA(processA_in);
+    setOneDArray(oneDArray_in);
+
+    // await new Promise((resolve) => setTimeout(resolve, 2000));
+
+    console.log("IN!");
+    console.log(processA);
+    // console.log(threeDArray);
+    // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
+
+    setLoading(false);
     setIsSubmitted(true);
   };
 
+  console.log("new");
+  console.log(processA);
+
   return (
     <div className="App">
-      <Particles
-        id="tsparticles"
-        init={particlesInit}
-        loaded={particlesLoaded}
-        options={{
-          fullScreen: false,
-          background: {
-            image: " linear-gradient(180deg, #000d0d 0%, #007373 100%)",
-          },
-          particles: {
-            number: {
-              value: 45,
-              density: {
-                enable: true,
-                value_area: 700,
-              },
-            },
-            color: {
-              value: "#005c5c",
-            },
-            shape: {
-              type: "square",
-              stroke: {
-                width: 0,
-                color: "#003b3b",
-              },
-              polygon: {
-                nb_sides: 5,
-              },
-            },
-            opacity: {
-              value: 0.5,
-              random: true,
-              anim: {
-                enable: false,
-                speed: 25,
-                opacity_min: 0.1,
-                sync: false,
-              },
-            },
-            size: {
-              value: 34,
-              random: true,
-              anim: {
-                enable: false,
-                speed: 25,
-                size_min: 0.1,
-                sync: false,
-              },
-            },
-            line_linked: {
-              enable: false,
-              distance: 300,
-              color: "#ffffff",
-              opacity: 0,
-              width: 0,
-            },
-            move: {
-              enable: true,
-              speed: 3,
-              direction: "outside",
-              straight: true,
-              out_mode: "out",
-              bounce: false,
-              attract: {
-                enable: false,
-                rotateX: 900,
-                rotateY: 1500,
-              },
-            },
-          },
-          interactivity: {
-            detect_on: "canvas",
-            events: {
-              onhover: {
-                enable: false,
-                mode: "repulse",
-              },
-              onclick: {
-                enable: false,
-                mode: "push",
-              },
-              resize: true,
-            },
-            modes: {
-              grab: {
-                distance: 800,
-                line_linked: {
-                  opacity: 1,
-                },
-              },
-              bubble: {
-                distance: 790,
-                size: 79,
-                duration: 2,
-                opacity: 0.8,
-                speed: 3,
-              },
-              repulse: {
-                distance: 400,
-                duration: 0.4,
-              },
-              push: {
-                particles_nb: 4,
-              },
-              remove: {
-                particles_nb: 2,
-              },
-            },
-          },
-          retina_detect: true,
-        }}
-      />
+      <Particlebg />
       <header className="header">
         <h1>Le Cube Magique</h1>
       </header>
       <main>
+        <LoadingModal isLoading={loading} />
         <div className="main-element">
           <div className="input-result-container flex flex-row">
             <div className="w-full justify-center pb-8">
@@ -273,6 +177,69 @@ function App() {
             </div>
           </div>
 
+          {selectedAlgorithm == "Genetic Algorithm" && (
+            <div className="mb-6 flex justify-center">
+              {" "}
+              <div className="w-1/3">
+                <h2 className="text-2xl font-bold text-blue-400 mb-4">
+                  Genetic Algorithm Parameter
+                </h2>
+                <div className="block mb-2">
+                  {" "}
+                  <label className="text-white">Population:</label>
+                  <input
+                    type="number"
+                    placeholder={population}
+                    onChange={(e) => setPopulation(Number(e.target.value))}
+                    // value={population}
+                    className="mt-1 ml-2 w-1/2 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                    style={{
+                      MozAppearance: "textfield",
+                      WebkitAppearance: "none",
+                    }}
+                  />
+                </div>
+                <div className="block mb-2">
+                  {" "}
+                  <label className="text-white">Iteration:</label>
+                  <input
+                    type="number"
+                    placeholder={iterGA}
+                    onChange={(e) => setIterGA(Number(e.target.value))}
+                    // value={iterGA}
+                    className="mt-1 ml-2 w-1/2 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                    style={{
+                      MozAppearance: "textfield",
+                      WebkitAppearance: "none",
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {selectedAlgorithm == "Random Restart Hill Climbing" && (
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-blue-400 mb-4">
+                Random Restart Parameter
+              </h2>
+              <label className="block text-white mb-2">
+                Max Restart:
+                <input
+                  type="number"
+                  placeholder={maxRes}
+                  onChange={(e) => setMaxRes(Number(e.target.value))}
+                  // value={maxRes}
+                  className="mt-1 mx-4 w-1/5 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  style={{
+                    MozAppearance: "textfield",
+                    WebkitAppearance: "none",
+                  }}
+                />
+              </label>
+            </div>
+          )}
+
           {selectedAlgorithm !== "Genetic Algorithm" && (
             <div>
               <h2 className="mx-[10%] text-4xl font-bold text-white mb-4">
@@ -281,6 +248,7 @@ function App() {
 
               <div className="mx-[10%] min-h-[300px] flex rounded-3xl border-4 border-white mb-8">
                 <div className="w-full h-full flex items-center justify-center">
+                  {/* <p>Variable Value: {processA}</p> */}
                   {isSubmitted ? (
                     <D2Render
                       array={processA[0]}
@@ -304,7 +272,7 @@ function App() {
           <div className="mx-[10%] h-[800px] rounded-3xl border-4 border-white mb-8">
             <div className="w-full h-full flex items-center justify-center">
               {isSubmitted ? (
-                <D3Render array={processA[0][2]} imeji="./background.jpg" />
+                <D3Render array={processA[0][0]} imeji="./background.jpg" />
               ) : (
                 <p className="text-white text-xl">Submit to render the cube</p>
               )}
@@ -318,7 +286,7 @@ function App() {
           <div className="mx-[10%] h-[800px] rounded-3xl border-4 border-white mb-8">
             <div className="w-full h-full flex items-center justify-center">
               {isSubmitted ? (
-                <D3Render array={processA[0][3]} imeji="./background3.jpg" />
+                <D3Render array={processA[0][1]} imeji="./background3.jpg" />
               ) : (
                 <p className="text-white text-xl">Submit to render the cube</p>
               )}
@@ -383,7 +351,16 @@ function App() {
             <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
               <div className="w-full h-full flex items-center justify-center">
                 <p className="text-white text-lg font-bold mx-4">
-                  {isSubmitted ? "Population: Val" : "Population"}{" "}
+                  {isSubmitted ? `GA Iteration: ${iterGA}` : "Population"}{" "}
+                </p>
+              </div>
+            </div>
+          )}
+          {selectedAlgorithm === "Genetic Algorithm" && (
+            <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
+              <div className="w-full h-full flex items-center justify-center">
+                <p className="text-white text-lg font-bold mx-4">
+                  {isSubmitted ? `Population: ${population}` : "Population"}{" "}
                 </p>
               </div>
             </div>
@@ -392,7 +369,7 @@ function App() {
             <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
               <div className="w-full h-full flex items-center justify-center">
                 <p className="text-white text-lg font-bold mx-4">
-                  {isSubmitted ? "Max SIdeways: Val" : "Max Sideways"}{" "}
+                  {isSubmitted ? "Max Sideways: Val" : "Max Sideways"}{" "}
                 </p>
               </div>
             </div>
@@ -421,7 +398,7 @@ function App() {
             <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
               <div className="w-full h-full flex items-center justify-center">
                 <p className="text-white text-lg font-bold mx-4">
-                  {isSubmitted ? "Max Restart: Val" : "Max Restart"}{" "}
+                  {isSubmitted ? `Max Restart: ${maxRes}` : "Population"}{" "}
                 </p>
               </div>
             </div>
