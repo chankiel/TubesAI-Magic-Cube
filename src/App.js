@@ -191,6 +191,7 @@ function App() {
                     type="number"
                     placeholder={population}
                     onChange={(e) => setPopulation(Number(e.target.value))}
+                    min="1"
                     // value={population}
                     className="mt-1 ml-2 w-1/2 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                     style={{
@@ -206,6 +207,7 @@ function App() {
                     type="number"
                     placeholder={iterGA}
                     onChange={(e) => setIterGA(Number(e.target.value))}
+                    min="1"
                     // value={iterGA}
                     className="mt-1 ml-2 w-1/2 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                     style={{
@@ -229,6 +231,7 @@ function App() {
                   type="number"
                   placeholder={maxRes}
                   onChange={(e) => setMaxRes(Number(e.target.value))}
+                  min="1"
                   // value={maxRes}
                   className="mt-1 mx-4 w-1/5 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
                   style={{
