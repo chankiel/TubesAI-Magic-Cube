@@ -2,7 +2,8 @@
 #include <cstdlib>   // random
 #include <ctime>     // time
 #include <algorithm> // shuffle
-#include <sstream>   // tostring
+#include <random>
+#include <sstream> // tostring
 #include <cmath>
 
 int getVectorIndex(int i, int j, int k)
@@ -23,8 +24,9 @@ State::State()
     {
         matriks.push_back(i + 1);
     }
-
-    random_shuffle(matriks.begin(), matriks.end());
+    std::random_device rd;
+    std::default_random_engine rng(rd());
+    std::shuffle(matriks.begin(), matriks.end(), rng);
 
     this->calculateBuffer();
     this->val = this->objectiveFunction();
@@ -333,10 +335,11 @@ State State::highestValuedSucc()
                 {
                     int iSucc = l / 25, jSucc = (l % 25) / 5, kSucc = l % 5;
                     State succ = this->generateSucc(i, j, k, iSucc, jSucc, kSucc);
-                    if(succ.getStateValue()<0){
-                        cout<<i<<", "<<j<<", "<<k<<endl;
-                        cout<<iSucc<<", "<<jSucc<<", "<<kSucc<<endl;
-                        cout<<succ.getStateValue()<<endl;
+                    if (succ.getStateValue() < 0)
+                    {
+                        cout << i << ", " << j << ", " << k << endl;
+                        cout << iSucc << ", " << jSucc << ", " << kSucc << endl;
+                        cout << succ.getStateValue() << endl;
                     }
                     if (succ.getStateValue() < bestState.getStateValue())
                     {
@@ -362,9 +365,6 @@ State State::randomSucc()
         }
     } while ((arr1[0] == arr2[0] && arr1[1] == arr2[1] && arr1[2] == arr2[2]));
     State neighbor = this->generateSucc(arr1[0], arr1[1], arr1[2], arr2[0], arr2[1], arr2[2]);
-
-    // cout<<arr1[0] << arr2[0] << arr1[1] << arr2[1] << arr1[2] << arr2[2]<<endl;
-    // cout<<"BEFORE: "<<this->objectiveFunction()<<endl<<"AFTER: "<<neighbor.objectiveFunction()<<endl;
     return neighbor;
 }
 

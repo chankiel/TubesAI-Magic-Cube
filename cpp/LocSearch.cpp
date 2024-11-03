@@ -3,6 +3,7 @@
 #include <chrono>
 #include <vector>
 #include <cmath>
+#include <emscripten/bind.h>
 
 using namespace std;
 
@@ -21,8 +22,6 @@ typedef struct
     int numRestarts;
 } DataFormat;
 
-// extern "C"
-// {
 DataFormat SteepestAscentHC()
 {
     State current;
@@ -43,32 +42,6 @@ DataFormat SteepestAscentHC()
         current = neighbor;
     }
 
-    df.last_state = current.getMatrix();
-
-    return df;
-}
-
-DataFormat SteepestAscentHC(vector<int> &m)
-{
-    State current(m);
-    DataFormat df = {
-        .initial_state = current.getMatrix(),
-    };
-    bool did = false;
-    while (true && !did)
-    {
-        State neighbor = current.highestValuedSucc();
-        df.objEachStep.push_back(neighbor.getStateValue());
-        if (neighbor.getStateValue() >= current.getStateValue())
-        {
-            break;
-        }
-
-        current = neighbor;
-        did = true;
-    }
-
-    cout << "State Value: " << current.getStateValue() << endl;
     df.last_state = current.getMatrix();
 
     return df;
@@ -121,8 +94,8 @@ DataFormat Stochastic()
         .initial_state = current.getMatrix(),
     };
 
-
-    for(int i = 0; i < NMAX; i++){
+    for (int i = 0; i < NMAX; i++)
+    {
         State neighbor = current.randomSucc();
         df.objEachStep.push_back(neighbor.getStateValue());
 
@@ -130,13 +103,9 @@ DataFormat Stochastic()
         {
             current = neighbor;
         }
-
     }
 
     df.last_state = current.getMatrix();
-    // cout << "i: " << i << endl;
-    cout << "value:" << endl;
-    cout << current.getStateValue() << endl;
 
     return df;
 }
@@ -212,93 +181,3 @@ DataFormat SimulatedAnnealing()
 // }
 
 // }
-
-void readMatrixFromFile(const string &filename, vector<int> &matrix)
-{
-    ifstream file(filename);
-
-    if (!file)
-    {
-        cerr << "Error opening file " << filename << endl;
-        return;
-    }
-
-    matrix.resize(125);
-
-    int idx = 0;
-    for (int i = 0; i < 5; ++i)
-    {
-        for (int j = 0; j < 5; ++j)
-        {
-            for (int k = 0; k < 5; ++k)
-            {
-                file >> matrix[idx];
-                idx++;
-                if (file.fail())
-                {
-                    cerr << "Error reading data from file" << endl;
-                    return;
-                }
-            }
-        }
-    }
-
-    file.close();
-}
-
-void displayMatrix(vector<int> &matriks)
-{
-    int idx = 0;
-    for (int i = 0; i < 5; ++i)
-    {
-        for (int j = 0; j < 5; ++j)
-        {
-            for (int k = 0; k < 5; ++k)
-            {
-                cout << matriks[idx] << " ";
-                idx++;
-            }
-            cout << endl;
-        }
-        cout << endl;
-    }
-}
-
-// State RandomRestartHC()
-// {
-//     State current =
-//     int i=0;
-//     bool found = false;
-//     while(n)
-// }
-
-int main()
-{
-    srand(time(0));
-    vector<int> matrix(125, 0);
-
-    readMatrixFromFile("matrix.txt", matrix);
-    auto start = chrono::high_resolution_clock::now();
-
-    DataFormat df;
-    // df = SteepestAscentHC(matrix);
-    // df = SteepestAscentHC();
-    // df = SteepestAscentHC();
-    df = Stochastic();
-    // df = SimulatedAnnealing();
-
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double, micro> duration = end - start;
-
-    cout << "INITIAL STATE: " << endl;
-    displayMatrix(df.initial_state);
-
-    cout << endl
-         << "---------------------------------------------------------------------\nLAST STATE: " << endl;
-    displayMatrix(df.last_state);
-    cout << endl
-         << "EXECUTION TIME: " << (float)duration.count() / 1000000 << "s" << endl;
-    cout << "OBJ FUNCTION: " << df.objEachStep[df.objEachStep.size() - 1];
-    cout << endl
-         << df.objEachStep.size() << endl;
-}
