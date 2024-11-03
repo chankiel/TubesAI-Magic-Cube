@@ -3,7 +3,6 @@
 #include <chrono>
 #include <vector>
 #include <cmath>
-#include <emscripten/bind.h>
 
 using namespace std;
 
