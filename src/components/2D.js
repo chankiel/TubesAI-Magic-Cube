@@ -1,5 +1,6 @@
-import { color } from "chart.js/helpers";
+// import { color } from "chart.js/helpers";
 import React, { useState, useEffect } from "react";
+import "./2D.css";
 
 const D2 = ({ array, idx1, idx2 }) => {
   // SVGs
@@ -32,6 +33,15 @@ const D2 = ({ array, idx1, idx2 }) => {
   // LOGIC --- LOGIC --- LOGIC --- LOGIC --- LOGIC --- LOGIC --- LOGIC --- LOGIC --- LOGIC --- LOGIC
   const [currentLayer, setCurrentLayer] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    const slider = document.querySelector(".custom-slider");
+    if (slider) {
+      slider.style.setProperty("--position", currentLayer);
+      slider.style.setProperty("--min", slider.min);
+      slider.style.setProperty("--max", slider.max);
+    }
+  }, [currentLayer]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -71,11 +81,12 @@ const D2 = ({ array, idx1, idx2 }) => {
         <div className="text-white font-bold">Step {currentLayer + 1}</div>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="flex flex-col sm:flex-wrap sm:flex-row justify-center gap-4">
         {chunks.map((chunk, chunkIndex) => (
+          // <div className="w-full">
           <div
             key={chunkIndex}
-            className="w-1/4 h-1/4 bg-blue-300 rounded-3xl p-2"
+            className="w-full sm:w-1/4 h-1/4 bg-blue-300 rounded-3xl p-2"
           >
             <div className="text-center text-black font-bold mb-2">
               Layer {chunkIndex + 1}
@@ -96,12 +107,13 @@ const D2 = ({ array, idx1, idx2 }) => {
               ))}
             </div>
           </div>
+          // </div>
         ))}
       </div>
 
       <button
         onClick={togglePlayPause}
-        className=" bg-green-600 mt-8 mb-8 text-white px-4 py-2 rounded-lg font-semibold justify-center"
+        className=" bg-green-600 mt-4 mb-4 text-white px-4 py-2 rounded-lg font-semibold justify-center"
       >
         {isPlaying ? <PauseIcon /> : <PlayIcon />}
         {/* {isPlaying ? "Pause" : "Play"} */}
@@ -113,7 +125,7 @@ const D2 = ({ array, idx1, idx2 }) => {
         max={array.length - 1}
         value={currentLayer}
         onChange={handleSliderChange}
-        className="w-full mb-4 mt-6"
+        className="w-full mb-4 custom-slider"
         // style={{ color: "#ffffff" }}
       />
     </div>
