@@ -1,5 +1,5 @@
 .custom-slider {
-  @apply appearance-none w-full h-2 bg-gray-300 rounded-lg; /* Base track style */
+  @apply appearance-none w-full h-2 bg-gray-300 rounded-lg;
   background-image: linear-gradient(
     to right,
     #4caf50 0%,
@@ -9,7 +9,6 @@
   );
 }
 
-/* Custom thumb */
 .custom-slider::-webkit-slider-thumb {
   @apply w-4 h-4 bg-green-600 rounded-full cursor-pointer;
   -webkit-appearance: none;
@@ -20,12 +19,10 @@
   @apply w-4 h-4 bg-green-600 rounded-full cursor-pointer;
 }
 
-/* For Firefox */
 .custom-slider::-moz-range-track {
   background: none;
 }
 
-/* Dynamically set the fill up to the current value */
 .custom-slider {
   --value: calc(
     (var(--position) - var(--min)) / (var(--max) - var(--min)) * 100%

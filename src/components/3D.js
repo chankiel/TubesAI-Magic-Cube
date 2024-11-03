@@ -1,11 +1,10 @@
 // App.js
-import React, { useRef, useEffect } from "react";
-import { Canvas, useFrame, extend } from "@react-three/fiber";
+import React, { useRef, useEffect, useMemo } from "react";
+import { Canvas, useLoader } from "@react-three/fiber";
 import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
 import * as THREE from "three";
-import { OrbitControls } from "@react-three/drei";
-import { useMemo } from "react";
+import { OrbitControls, Environment } from "@react-three/drei";
 
 function flatten3DArray(array) {
   if (
@@ -81,7 +80,7 @@ function NumberedBox({ position, number }) {
         mesh.current.remove(mesh.current.children[0]);
       }
     };
-  }, []);
+  }, [number]);
 
   return (
     <group position={position} ref={mesh}>
@@ -102,8 +101,6 @@ function CubeGrid({ array }) {
       const y = Math.floor((i % 25) / 5);
       const z = Math.floor(i / 25);
 
-      // console.log(typeof(array[i]));
-
       boxesArray.push(
         <NumberedBox
           key={i}
@@ -119,60 +116,23 @@ function CubeGrid({ array }) {
   return <>{boxes}</>;
 }
 
-function CubeGrid2({ array }) {
-  const boxes = useMemo(() => {
-    const boxesArray = [];
-
-    for (let i = 0; i < array.length; i++) {
-      const x = i % 5;
-      const y = Math.floor((i % 25) / 5);
-      const z = Math.floor(i / 25);
-
-      // console.log(typeof(array[i]));
-
-      boxesArray.push(
-        <NumberedBox
-          key={i}
-          position={[(x - 2) * 2, (-y + 2) * 2, (-z + 2) * 2]}
-          number={array[i]}
-        />
-      );
-    }
-
-    return boxesArray;
-  }, [array]);
-
-  return <>{boxes}</>;
-}
-
-const D3 = ({ array }) => {
-  // const nextArray = flatten3DArray(array);
+const D3 = ({ array, imeji }) => {
   const nextArray = array;
+
   return (
     <div className="w-full h-full">
       <Canvas
         className="h-full w-full rounded-3xl"
-        style={{ backgroundColor: "black" }}
         camera={{ position: [0, 0, 25], fov: 90 }}
       >
         <ambientLight intensity={0.5} />
         <directionalLight position={[2, 5, 1]} intensity={0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
+
         <CubeGrid array={nextArray} />
         <OrbitControls />
+        <Environment files={imeji} background />
       </Canvas>
-
-      {/* <Canvas
-        className="h-full w-full"
-        style={{ backgroundColor: "black" }}
-        camera={{ position: [0, 0, 15], fov: 90 }}
-      >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[2, 5, 1]} intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
-        <CubeGrid2 array={nextArray} />
-        <OrbitControls />
-      </Canvas> */}
     </div>
   );
 };
