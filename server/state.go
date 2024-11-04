@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"time"
 )
 
 const MAGIC_NUMBER = 315
@@ -31,7 +30,6 @@ func NewState() State {
 	state.buffer[3] = make([]int, 30)
 	state.buffer[4] = make([]int, 4)
 
-	rand.Seed(time.Now().UnixNano())
 	rand.Shuffle(len(state.matriks), func(i, j int) {
 		state.matriks[i], state.matriks[j] = state.matriks[j], state.matriks[i]
 	})
@@ -42,10 +40,10 @@ func NewState() State {
 	return state
 }
 
-func NewStateWithMatrix(m [125]int) State {
+func NewStateWithMatrix(m []int) State {
 	var state State
-	state.matriks = [125]int{}
-	state.matriks = m
+
+	copy(state.matriks[:], m)
 
 	for i := 0; i < 25; i++ {
 		state.buffer[0] = append(state.buffer[0], 0)
@@ -64,6 +62,7 @@ func NewStateWithMatrix(m [125]int) State {
 
 	return state
 }
+
 
 func (s *State) getElement(i, j, k int) int {
 	idx := getVectorIndex(i, j, k)
@@ -320,12 +319,6 @@ func (s *State) highestValuedSucc() State {
 					succ := s.generateSucc(i, j, k, iSucc, jSucc, kSucc)
 
 					if succ.getStateValue() < bestState.getStateValue() {
-						// bestState.printBuffer()
-						// fmt.Println("--------")
-						// succ.printBuffer()
-						// fmt.Println(i, j, k, iSucc, jSucc, kSucc)
-						// fmt.Println(s.matriks[idx],s.matriks[l])
-						// fmt.Println(bestState.getStateValue(),succ.getStateValue())
 						bestState = succ
 					}
 				}
