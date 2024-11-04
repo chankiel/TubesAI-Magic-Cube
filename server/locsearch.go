@@ -182,7 +182,7 @@ func Stochastic() DataFormat {
 }
 
 func Schedule(t int) float64 {
-	return 90000000 * math.Pow(0.9995, float64(t))
+	return 90000000 * math.Pow(0.99995, float64(t))
 }
 
 func SimulatedAnnealing() DataFormat {
