@@ -14,20 +14,22 @@ const (
 	SIZE_MAGIC       = 125
 	MUTATE_THRESHOLD = 0.9
 	MIN_OBJ_RESTART  = 100
-	GOAL_OBJ 		= 0
+	GOAL_OBJ         = 0
 )
 
 // DataFormat Umum
 type DataFormat struct {
-	InitialState [125]int
-	LastState    [125]int
-	BestObj      int
-	ObjEachStep  []int
-	RestartObj		[][]int
-	Duration     float64
-	NumRestarts  int
-	IterationPerRestart []int 
-	PlotE        []float64
+	InitialState        [125]int
+	LastState           [125]int
+	BestObj             int
+	ObjEachStep         []int
+	RestartObj          [][]int
+	Duration            float64
+	NumRestarts         int
+	IterationPerRestart []int
+	PlotE               []float64
+	FirstSwapIndex      []int
+	SecondSwapIndex     []int
 }
 
 // Khusus Genetic
@@ -50,11 +52,13 @@ func SteepestAscentHC() DataFormat {
 
 	start := time.Now()
 	for {
-		neighbor := current.highestValuedSucc()
+		neighbor, FirstSwapIndex, SecondSwapIndex := current.highestValuedSucc()
 		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 		if neighbor.getStateValue() >= current.getStateValue() {
 			break
 		}
+		df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
+		df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 
 		current = neighbor
 	}
@@ -72,9 +76,9 @@ func RandomRestartHC(maxRestart int) DataFormat {
 	var bestState = State{val: math.MaxInt}
 	start := time.Now()
 	numRestart := 0
-	for{
-		current	= NewState()
-		if(numRestart == 0){
+	for {
+		current = NewState()
+		if numRestart == 0 {
 			df = DataFormat{
 				InitialState: current.getMatrix(),
 			}
@@ -84,28 +88,28 @@ func RandomRestartHC(maxRestart int) DataFormat {
 		iteration := 0
 		for {
 			iteration++
-			neighbor := current.highestValuedSucc()
+			neighbor, _, _ := current.highestValuedSucc()
 			df.RestartObj[numRestart] = append(df.RestartObj[numRestart], neighbor.getStateValue())
 			if neighbor.getStateValue() >= current.getStateValue() {
 				break
 			}
-			
+
 			current = neighbor
 		}
-		if(current.val < bestState.val){
+		if current.val < bestState.val {
 			bestState = current
 		}
-		
+
 		df.IterationPerRestart = append(df.IterationPerRestart, iteration)
-		
+
 		numRestart++
-		if(numRestart == maxRestart || bestState.val == GOAL_OBJ ){
+		if numRestart == maxRestart || bestState.val == GOAL_OBJ {
 			break
 		}
 	}
 	elapsed := time.Since(start)
 
-	df.NumRestarts = numRestart;
+	df.NumRestarts = numRestart
 	df.LastState = bestState.matriks
 	df.Duration = elapsed.Seconds()
 	df.BestObj = bestState.val
@@ -121,7 +125,7 @@ func SideWaysMoveHC(maxSideways int) DataFormat {
 	start := time.Now()
 	sidewaysMove := 0
 	for {
-		neighbor := current.highestValuedSucc()
+		neighbor, FirstSwapIndex, SecondSwapIndex := current.highestValuedSucc()
 
 		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 
@@ -137,6 +141,8 @@ func SideWaysMoveHC(maxSideways int) DataFormat {
 		}
 
 		current = neighbor
+		df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
+		df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 	}
 	elapsed := time.Since(start)
 
@@ -154,12 +160,15 @@ func Stochastic() DataFormat {
 
 	start := time.Now()
 	for i := 0; i < NMAX; i++ {
-		neighbor := current.randomSucc()
+		neighbor, FirstSwapIndex, SecondSwapIndex := current.randomSucc()
 		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 
 		if neighbor.getStateValue() < current.getStateValue() {
 			current = neighbor
 		}
+		
+		df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
+		df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 	}
 	elapsed := time.Since(start)
 
@@ -186,16 +195,22 @@ func SimulatedAnnealing() DataFormat {
 		if T <= 0.01 {
 			break
 		}
-		neighbor := current.randomSucc()
+		neighbor,FirstSwapIndex,SecondSwapIndex := current.randomSucc()
 		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 
 		deltaE := neighbor.getStateValue() - current.getStateValue()
 		if deltaE < 0 {
 			current = neighbor
+			
+			df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
+			df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 		} else {
 			eulerVal := math.Exp(float64(-deltaE) / T)
 			df.PlotE = append(df.PlotE, eulerVal)
 			if rand.Float64() <= eulerVal {
+				
+			df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
+			df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 				current = neighbor
 			}
 		}
@@ -296,7 +311,7 @@ func GeneticAlgorithm(nPopulation, nIteration int) GeneticFormat {
 			y := randomSelectionGenetic(population, totalValue, nPopulation)
 			child := OX1(population[x], population[y])
 			if mutateProb() {
-				child = child.randomSucc()
+				child,_,_ = child.randomSucc()
 			}
 			if child.val < bestChild.val {
 				bestChild = child

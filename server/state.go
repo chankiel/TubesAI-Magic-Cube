@@ -306,8 +306,10 @@ func (s *State) generateSucc(i1, j1, k1, i2, j2, k2 int) State {
 	return succ
 }
 
-func (s *State) highestValuedSucc() State {
+func (s *State) highestValuedSucc() (State, int,int) {
 	bestState := s.copy()
+	var FirstSwapIndex int
+	var SecondSwapIndex int
 	idx := 0
 	for i := 0; i < 5; i++ {
 		for j := 0; j < 5; j++ {
@@ -320,6 +322,8 @@ func (s *State) highestValuedSucc() State {
 
 					if succ.getStateValue() < bestState.getStateValue() {
 						bestState = succ
+						FirstSwapIndex = 25*i + 5*j + k
+						SecondSwapIndex = l 
 					}
 				}
 				idx++
@@ -327,10 +331,10 @@ func (s *State) highestValuedSucc() State {
 		}
 	}
 
-	return bestState
+	return bestState,FirstSwapIndex,SecondSwapIndex
 }
 
-func (s *State) randomSucc() State {
+func (s *State) randomSucc() (State,int,int) {
 	var arr1, arr2 [3]int
 	for {
 		for i := 0; i < 3; i++ {
@@ -341,6 +345,9 @@ func (s *State) randomSucc() State {
 			break
 		}
 	}
+	
+	firstSwapIdx := 25*arr1[0] + 5*arr1[1] + arr1[2]
+	secondSwapIdx := 25*arr2[0] + 5*arr2[1] + arr2[2]
 
-	return s.generateSucc(arr1[0], arr1[1], arr1[2], arr2[0], arr2[1], arr2[2])
+	return s.generateSucc(arr1[0], arr1[1], arr1[2], arr2[0], arr2[1], arr2[2]),firstSwapIdx,secondSwapIdx
 }
