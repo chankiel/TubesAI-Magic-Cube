@@ -15,19 +15,23 @@ const (
 	MUTATE_THRESHOLD = 0.9
 )
 
-// DataFormat struct
+// DataFormat Umum
 type DataFormat struct {
 	InitialState [125]int
 	LastState    [125]int
+	BestObj      int
 	ObjEachStep  []int
 	Duration     float64
 	NumRestarts  int
 	PlotE        []float64
 }
 
+// Khusus Genetic
 type GeneticFormat struct {
 	InitialPopulation [][125]int
 	LastPopulation    [][125]int
+	BestState         [125]int
+	BestObj           int
 	MaxPerIteration   []int
 	AvgPerIteration   []float64
 	NumIterations     int
@@ -54,6 +58,7 @@ func SteepestAscentHC() DataFormat {
 
 	df.LastState = current.getMatrix()
 	df.Duration = elapsed.Seconds()
+	df.BestObj = current.val
 	return df
 }
 
@@ -87,6 +92,7 @@ func SideWaysMoveHC(maxSideways int) DataFormat {
 
 	df.LastState = current.getMatrix()
 	df.Duration = elapsed.Seconds()
+	df.BestObj = current.val
 	return df
 }
 
@@ -109,6 +115,7 @@ func Stochastic() DataFormat {
 
 	df.LastState = current.getMatrix()
 	df.Duration = elapsed.Seconds()
+	df.BestObj = current.val
 	return df
 }
 
@@ -148,6 +155,7 @@ func SimulatedAnnealing() DataFormat {
 
 	df.LastState = current.getMatrix()
 	df.Duration = elapsed.Seconds()
+	df.BestObj = current.val
 	return df
 }
 
@@ -226,9 +234,9 @@ func GeneticAlgorithm(nPopulation, nIteration int) GeneticFormat {
 
 	start := time.Now()
 
-	var bestCurrentPop = State{val: math.MaxInt}
+	var bestOverall = State{val: math.MaxInt}
 	iteration := 0
-	for iteration < nIteration && bestCurrentPop.val > 0 {
+	for iteration < nIteration && bestOverall.val > 0 {
 		new_population := []State{}
 		var bestChild = State{val: math.MaxInt}
 		newTotalValue := 0
@@ -249,17 +257,21 @@ func GeneticAlgorithm(nPopulation, nIteration int) GeneticFormat {
 		iteration++
 		population = new_population
 		totalValue = newTotalValue
-		bestCurrentPop = bestChild
+		if bestChild.val < bestOverall.val {
+			bestOverall = bestChild
+		}
 
 		gf.MaxPerIteration = append(gf.MaxPerIteration, bestChild.val)
 		gf.AvgPerIteration = append(gf.AvgPerIteration, float64(newTotalValue)/float64(nPopulation))
 	}
 
 	elapsed := time.Since(start)
-	
+
+	gf.BestState = bestOverall.matriks
+	gf.BestObj = bestOverall.val
 	gf.Duration = elapsed.Seconds()
 	gf.NumIterations = iteration
-	for _,state:= range population{
+	for _, state := range population {
 		gf.LastPopulation = append(gf.LastPopulation, state.matriks)
 	}
 
