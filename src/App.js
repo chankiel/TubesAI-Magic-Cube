@@ -10,7 +10,9 @@ import Particlebg from "./components/Particlebg";
 
 function App() {
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
+  const [selectedAlgorithm, setSelectedAlgorithm] = useState(
+    "Steepest Ascent Hill Climbing"
+  );
   const [loading, setLoading] = useState(false);
   const [maxRes, setMaxRes] = useState(5);
   const [maxSide, setMaxSide] = useState(1);
@@ -162,7 +164,7 @@ function App() {
         setFinalState(data.LastState);
         setTime(data.Duration);
         setOneDArray(data.ObjEachStep);
-        setBestObj(oneDArray[oneDArray.length - 1]);
+        setBestObj(data.BestObj);
         // setOneDArray(oneDArray.reverse());
         setMaxRes(data.NumRestarts);
         setplotE(data.PlotE);
@@ -176,7 +178,8 @@ function App() {
           )
         );
         console.log("dsini");
-        console.log(processA, data.FirstSwapIndex, data.SecondSwapIndex);
+        // console.log(processA, data.FirstSwapIndex, data.SecondSwapIndex);
+        // console.log(data.);
       }
 
       // console.log("wandi");
@@ -221,9 +224,9 @@ function App() {
                     setIsSubmitted(false);
                   }}
                 >
-                  <option value="" disabled selected hidden>
+                  {/* <option value="" disabled selected hidden>
                     Select an algorithm
-                  </option>
+                  </option> */}
                   <option value="Steepest Ascent Hill Climbing">
                     Steepest Ascent Hill Climbing
                   </option>
