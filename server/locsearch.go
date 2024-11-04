@@ -166,7 +166,7 @@ func Stochastic() DataFormat {
 		}
 
 		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
-		
+
 		df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
 		df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 	}
@@ -195,23 +195,24 @@ func SimulatedAnnealing() DataFormat {
 		if T <= 0.01 {
 			break
 		}
-		neighbor,FirstSwapIndex,SecondSwapIndex := current.randomSucc()
-		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
+		neighbor, FirstSwapIndex, SecondSwapIndex := current.randomSucc()
 
 		deltaE := neighbor.getStateValue() - current.getStateValue()
 		if deltaE < 0 {
 			current = neighbor
-			
+
+			df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 			df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
 			df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 		} else {
 			eulerVal := math.Exp(float64(-deltaE) / T)
 			df.PlotE = append(df.PlotE, eulerVal)
 			if rand.Float64() <= eulerVal {
-				
-			df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
-			df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 				current = neighbor
+				
+				df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
+				df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
+				df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 			}
 		}
 		t++
@@ -311,7 +312,7 @@ func GeneticAlgorithm(nPopulation, nIteration int) GeneticFormat {
 			y := randomSelectionGenetic(population, totalValue, nPopulation)
 			child := OX1(population[x], population[y])
 			if mutateProb() {
-				child,_,_ = child.randomSucc()
+				child, _, _ = child.randomSucc()
 			}
 			if child.val < bestChild.val {
 				bestChild = child
