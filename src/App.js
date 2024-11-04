@@ -179,7 +179,7 @@ function App() {
         );
         console.log("dsini");
         // console.log(processA, data.FirstSwapIndex, data.SecondSwapIndex);
-        // console.log(data.);
+        console.log(data.FirstSwapIndex);
       }
 
       // console.log("wandi");
