@@ -13,8 +13,10 @@ function App() {
   const [selectedAlgorithm, setSelectedAlgorithm] = useState("");
   const [loading, setLoading] = useState(false);
   const [maxRes, setMaxRes] = useState(5);
+  const [maxSide, setMaxSide] = useState(1);
   const [population, setPopulation] = useState(10);
   const [iterGA, setIterGA] = useState(5);
+  const [oneDArray, setOneDArray] = useState([0, 9, 1, 2]);
 
   // -----------------------------------------------------------------------------------------
   function flatten3DArray(array) {
@@ -67,62 +69,62 @@ function App() {
     [1, 3],
     [6, 7],
   ]);
-  const [oneDArray, setOneDArray] = useState([0, 9, 1, 2]);
+  const [initState, setInitState] = useState(threeDArray);
+  const [finalState, setFinalState] = useState(threeDArray);
+  const [time, setTime] = useState(0);
 
-  console.log("old");
-  console.log(processA);
+  function mapValue(input) {
+    const mapping = {
+      "Steepest Ascent Hill Climbing": "steepest-ascent",
+      "Sideways Move Hill Climbing": `sideways-move/${maxSide}`,
+      "Random Restart Hill Climbing": "3",
+      "Stochastic Hill Climbing": "stochastic",
+      "Simulated Annealing": "simulated-annealing",
+      "Genetic Algorithm": "6",
+    };
 
-  // useEffect(() => {
-  //   console.log("Value of myVariable before proceeding:", processA);
-  // }, [processA]);
+    const output = mapping[input];
+
+    return output !== undefined ? output : "Not Found";
+  }
   // -----------------------------------------------------------------------------------------
 
   const solveCube = async () => {
     setIsSubmitted(false);
     setLoading(true);
 
-    // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
+    try {
+      console.log(`http://localhost:8080/${mapValue(selectedAlgorithm)}`);
+      const response = await fetch(
+        `http://localhost:8080/${mapValue(selectedAlgorithm)}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch processA");
+      }
+      const data = await response.json();
 
-    let oneDArray_in = Array.from({ length: 30 }, (_, index) => index + 1);
+      console.log("data");
+      console.log(data);
 
-    for (let i = oneDArray.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [oneDArray[i], oneDArray[j]] = [oneDArray[j], oneDArray[i]];
+      setInitState(data.InitialState);
+      setFinalState(data.LastState);
+      setTime(data.Duration);
+      setOneDArray(data.ObjEachStep);
+      // setOneDArray(oneDArray.reverse());
+      setMaxRes(data.NumRestarts);
+
+      console.log("wandi");
+      console.log(oneDArray);
+    } catch (error) {
+      console.error("Error fetching processA:", error);
+    } finally {
+      setLoading(false);
+      setIsSubmitted(true);
     }
-
-    const n = 5;
-    let processA_in = [
-      Array.from({ length: n }, () => {
-        const numbers = Array.from({ length: 125 }, (_, i) => i + 1);
-        shuffleArray(numbers);
-        return numbers;
-      }),
-
-      Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
-
-      Array.from({ length: n }, () => Math.floor(Math.random() * 125) + 1),
-    ];
-
-    processA_in[0].unshift(threeDArray);
-    processA_in[1].unshift(7);
-    processA_in[2].unshift(17);
-
-    setProcessA(processA_in);
-    setOneDArray(oneDArray_in);
-
-    // await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    console.log("IN!");
-    console.log(processA);
-    // console.log(threeDArray);
-    // PLACEHOLDER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER --- WILL BE DELETED LATER
-
-    setLoading(false);
-    setIsSubmitted(true);
   };
 
-  console.log("new");
-  console.log(processA);
+  // console.log("new");
+  // console.log(processA);
 
   return (
     <div className="App">
@@ -243,6 +245,29 @@ function App() {
             </div>
           )}
 
+          {selectedAlgorithm == "Sideways Move Hill Climbing" && (
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-blue-400 mb-4">
+                Sideways Parameter
+              </h2>
+              <label className="block text-white mb-2">
+                Max Sideways:
+                <input
+                  type="number"
+                  placeholder={maxSide}
+                  onChange={(e) => setMaxSide(Number(e.target.value))}
+                  min="1"
+                  // value={maxRes}
+                  className="mt-1 mx-4 w-1/5 p-2 rounded bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none"
+                  style={{
+                    MozAppearance: "textfield",
+                    WebkitAppearance: "none",
+                  }}
+                />
+              </label>
+            </div>
+          )}
+
           {selectedAlgorithm !== "Genetic Algorithm" && (
             <div>
               <h2 className="mx-[10%] text-4xl font-bold text-white mb-4">
@@ -275,7 +300,7 @@ function App() {
           <div className="mx-[10%] h-[800px] rounded-3xl border-4 border-white mb-8">
             <div className="w-full h-full flex items-center justify-center">
               {isSubmitted ? (
-                <D3Render array={processA[0][0]} imeji="./background.jpg" />
+                <D3Render array={initState} imeji="./background.jpg" />
               ) : (
                 <p className="text-white text-xl">Submit to render the cube</p>
               )}
@@ -289,7 +314,7 @@ function App() {
           <div className="mx-[10%] h-[800px] rounded-3xl border-4 border-white mb-8">
             <div className="w-full h-full flex items-center justify-center">
               {isSubmitted ? (
-                <D3Render array={processA[0][1]} imeji="./background3.jpg" />
+                <D3Render array={finalState} imeji="./background3.jpg" />
               ) : (
                 <p className="text-white text-xl">Submit to render the cube</p>
               )}
@@ -332,21 +357,23 @@ function App() {
           <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
             <div className="w-full h-full flex items-center justify-center">
               <p className="text-white text-lg font-bold mx-4">
-                {isSubmitted ? "Objective Function: Val" : "Objective Function"}{" "}
+                {isSubmitted
+                  ? `Objective Function: ${oneDArray[oneDArray.length - 1]}`
+                  : "Objective Function"}{" "}
               </p>
             </div>
           </div>
           <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
             <div className="w-full h-full flex items-center justify-center">
               <p className="text-white text-lg font-bold mx-4">
-                {isSubmitted ? "Duration: Val" : "Duration"}{" "}
+                {isSubmitted ? `Duration: ${time} second(s)` : "Duration"}{" "}
               </p>
             </div>
           </div>
           <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
             <div className="w-full h-full flex items-center justify-center">
               <p className="text-white text-lg font-bold mx-4">
-                {isSubmitted ? "Iteration: Val" : "Iteration"}{" "}
+                {isSubmitted ? `Iteration: ${oneDArray.length}` : "Iteration"}{" "}
               </p>
             </div>
           </div>
@@ -372,7 +399,7 @@ function App() {
             <div className="w-[200px] h-[200px] rounded-3xl border-4 border-white bg-black t mb-8 mx-4">
               <div className="w-full h-full flex items-center justify-center">
                 <p className="text-white text-lg font-bold mx-4">
-                  {isSubmitted ? "Max Sideways: Val" : "Max Sideways"}{" "}
+                  {isSubmitted ? `Max Sideways: ${maxSide}` : "Max Sideways"}{" "}
                 </p>
               </div>
             </div>
