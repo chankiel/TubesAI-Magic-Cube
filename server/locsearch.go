@@ -53,10 +53,10 @@ func SteepestAscentHC() DataFormat {
 	start := time.Now()
 	for {
 		neighbor, FirstSwapIndex, SecondSwapIndex := current.highestValuedSucc()
-		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 		if neighbor.getStateValue() >= current.getStateValue() {
 			break
 		}
+		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 		df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
 		df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
 
@@ -89,10 +89,10 @@ func RandomRestartHC(maxRestart int) DataFormat {
 		for {
 			iteration++
 			neighbor, _, _ := current.highestValuedSucc()
-			df.RestartObj[numRestart] = append(df.RestartObj[numRestart], neighbor.getStateValue())
 			if neighbor.getStateValue() >= current.getStateValue() {
 				break
 			}
+			df.RestartObj[numRestart] = append(df.RestartObj[numRestart], neighbor.getStateValue())
 
 			current = neighbor
 		}
@@ -127,8 +127,6 @@ func SideWaysMoveHC(maxSideways int) DataFormat {
 	for {
 		neighbor, FirstSwapIndex, SecondSwapIndex := current.highestValuedSucc()
 
-		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
-
 		if neighbor.getStateValue() > current.getStateValue() {
 			break
 		} else if neighbor.getStateValue() == current.getStateValue() {
@@ -140,6 +138,7 @@ func SideWaysMoveHC(maxSideways int) DataFormat {
 			sidewaysMove = 0
 		}
 
+		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 		current = neighbor
 		df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
 		df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
@@ -161,11 +160,12 @@ func Stochastic() DataFormat {
 	start := time.Now()
 	for i := 0; i < NMAX; i++ {
 		neighbor, FirstSwapIndex, SecondSwapIndex := current.randomSucc()
-		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 
 		if neighbor.getStateValue() < current.getStateValue() {
 			current = neighbor
 		}
+
+		df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 		
 		df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
 		df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
