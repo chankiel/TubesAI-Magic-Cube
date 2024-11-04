@@ -13,6 +13,8 @@ const (
 	SIMULATED_BOUND  = 0.5
 	SIZE_MAGIC       = 125
 	MUTATE_THRESHOLD = 0.9
+	MIN_OBJ_RESTART  = 100
+	GOAL_OBJ 		= 0
 )
 
 // DataFormat Umum
@@ -21,8 +23,10 @@ type DataFormat struct {
 	LastState    [125]int
 	BestObj      int
 	ObjEachStep  []int
+	RestartObj		[][]int
 	Duration     float64
 	NumRestarts  int
+	IterationPerRestart []int 
 	PlotE        []float64
 }
 
@@ -59,6 +63,52 @@ func SteepestAscentHC() DataFormat {
 	df.LastState = current.getMatrix()
 	df.Duration = elapsed.Seconds()
 	df.BestObj = current.val
+	return df
+}
+
+func RandomRestartHC(maxRestart int) DataFormat {
+	var current State
+	var df DataFormat
+	var bestState = State{val: math.MaxInt}
+	start := time.Now()
+	numRestart := 0
+	for{
+		current	= NewState()
+		if(numRestart == 0){
+			df = DataFormat{
+				InitialState: current.getMatrix(),
+			}
+		}
+
+		df.RestartObj = append(df.RestartObj, []int{})
+		iteration := 0
+		for {
+			iteration++
+			neighbor := current.highestValuedSucc()
+			df.RestartObj[numRestart] = append(df.RestartObj[numRestart], neighbor.getStateValue())
+			if neighbor.getStateValue() >= current.getStateValue() {
+				break
+			}
+			
+			current = neighbor
+		}
+		if(current.val < bestState.val){
+			bestState = current
+		}
+		
+		df.IterationPerRestart = append(df.IterationPerRestart, iteration)
+		
+		numRestart++
+		if(numRestart == maxRestart || bestState.val == GOAL_OBJ ){
+			break
+		}
+	}
+	elapsed := time.Since(start)
+
+	df.NumRestarts = numRestart;
+	df.LastState = bestState.matriks
+	df.Duration = elapsed.Seconds()
+	df.BestObj = bestState.val
 	return df
 }
 

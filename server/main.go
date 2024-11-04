@@ -43,6 +43,25 @@ func sidewaysMoveHandler(w http.ResponseWriter, r *http.Request){
     }
 }
 
+func randomRestartHandler(w http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	maxRestartStr := vars["maxRestart"]
+	maxRestart := 0           
+
+	_, err := fmt.Sscanf(maxRestartStr, "%d", &maxRestart)
+	if err != nil {
+		http.Error(w, "Invalid number", http.StatusBadRequest)
+		return
+	}
+
+    data := RandomRestartHC(maxRestart)
+    w.Header().Set("Content-Type", "application/json")
+    if err := json.NewEncoder(w).Encode(data); err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+}
+
 func stochasticHandler(w http.ResponseWriter, r *http.Request) {
     data := Stochastic()
     w.Header().Set("Content-Type", "application/json")
@@ -95,6 +114,7 @@ func main() {
     r.HandleFunc("/", helloHandler)
     r.HandleFunc("/steepest-ascent", SteepestAscentHandler)
     r.HandleFunc("/sideways-move/{maxSideway}", sidewaysMoveHandler)
+    r.HandleFunc("/random-restart/{maxRestart}", randomRestartHandler)
     r.HandleFunc("/stochastic", stochasticHandler)
     r.HandleFunc("/simulated-annealing", simulatedAnnealingHandler)
 	r.HandleFunc("/genetic-algo/{nPopulation}/{nIteration}", geneticHandler)
