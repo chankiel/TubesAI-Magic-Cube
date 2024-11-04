@@ -1,70 +1,69 @@
-# Getting Started with Create React App
+# Magic Cube Solver - With Local Search Algorithms
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description 📝
 
-## Available Scripts
+This project is a Web application that solves a 5x5x5 magic cube using various local search algorithms. Each algorithm offers a unique approach to finding a solution with different search techniques in artificial intelligence.
 
-In the project directory, you can run:
+**Multiple Local Search Algorithms**:
 
-### `npm start`
+- Steepest Ascent Hill Climbing
+- Sideways Move Hill Climbing
+- Stochastic Hill Climbing
+- Random Restart Hill Climbing
+- Simulated Annealing
+- Genetic Algorithm
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## Requirements 🤔
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- **Go (Golang)**: [Install Go](https://golang.org/dl/)
+- **Node.js**: [Install Node.js](https://nodejs.org/en/)
 
-### `npm test`
+## Setting Up 💻
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Clone the Repository
 
-### `npm run build`
+```cmd
+git clone https://github.com/chankiel/TubesAI-Magic-Cube
+cd TubesAI-Magic-Cube
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Install BackEnd Dependencies
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+```cmd
+cd server
+go get -u./...
+cd ..
+```
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Install FrontEnd Dependencies
 
-### `npm run eject`
+```cmd
+npm istall
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Running the Application 🏃‍♂️‍➡️
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Start the Backend Server
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```cmd
+cd server
+go run .
+cd ..
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Start the FrontEnd Server
 
-## Learn More
+```cmd
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Open the Application
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Navigate to `http://localhost:3000`
 
-### Code Splitting
+## Assignments
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+**13522029 - BackEnd Algorithms**<br>
+**13522043 - FrontEnd + Integration**<br>
+**13522054 - BackEnd Algorithms**<br>
+**13522110 - FrontEnd + Random Restart Hill Climbing**<br>
