@@ -388,6 +388,7 @@ function App() {
                         array={initPop}
                         idx1={999}
                         idx2={999}
+                        valAr={null}
                       />
                     ) : (
                       <p className="text-white text-xl mt-[130px]">
@@ -414,6 +415,7 @@ function App() {
                         array={finalPop}
                         idx1={999}
                         idx2={999}
+                        valAr={null}
                       />
                     ) : (
                       <p className="text-white text-xl mt-[130px]">
