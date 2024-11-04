@@ -49,6 +49,7 @@ func SteepestAscentHC() DataFormat {
 	df := DataFormat{
 		InitialState: current.getMatrix(),
 	}
+	df.ObjEachStep = append(df.ObjEachStep, current.getStateValue())
 
 	start := time.Now()
 	for {
@@ -121,6 +122,7 @@ func SideWaysMoveHC(maxSideways int) DataFormat {
 	df := DataFormat{
 		InitialState: current.getMatrix(),
 	}
+	df.ObjEachStep = append(df.ObjEachStep, current.getStateValue())
 
 	start := time.Now()
 	sidewaysMove := 0
@@ -156,6 +158,7 @@ func Stochastic() DataFormat {
 	df := DataFormat{
 		InitialState: current.getMatrix(),
 	}
+	df.ObjEachStep = append(df.ObjEachStep, current.getStateValue())
 
 	start := time.Now()
 	for i := 0; i < NMAX; i++ {
@@ -187,6 +190,8 @@ func SimulatedAnnealing() DataFormat {
 	df := DataFormat{
 		InitialState: current.getMatrix(),
 	}
+	df.ObjEachStep = append(df.ObjEachStep, current.getStateValue())
+
 
 	start := time.Now()
 	t := 0
@@ -209,7 +214,7 @@ func SimulatedAnnealing() DataFormat {
 			df.PlotE = append(df.PlotE, eulerVal)
 			if rand.Float64() <= eulerVal {
 				current = neighbor
-				
+
 				df.ObjEachStep = append(df.ObjEachStep, neighbor.getStateValue())
 				df.FirstSwapIndex = append(df.FirstSwapIndex, FirstSwapIndex)
 				df.SecondSwapIndex = append(df.SecondSwapIndex, SecondSwapIndex)
