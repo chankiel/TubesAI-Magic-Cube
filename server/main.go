@@ -3,7 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"math/rand"
 	"net/http"
+	"time"
+
 	"github.com/gorilla/mux"
 )
 
@@ -25,10 +28,10 @@ func SteepestAscentHandler(w http.ResponseWriter, r *http.Request) {
 
 func sidewaysMoveHandler(w http.ResponseWriter, r *http.Request){
 	vars := mux.Vars(r)
-	numberStr := vars["maxSideway"]
+	maxSidewayStr := vars["maxSideway"]
 	maxSideway := 0           
 
-	_, err := fmt.Sscanf(numberStr, "%d", &maxSideway)
+	_, err := fmt.Sscanf(maxSidewayStr, "%d", &maxSideway)
 	if err != nil {
 		http.Error(w, "Invalid number", http.StatusBadRequest)
 		return
@@ -68,13 +71,43 @@ func simulatedAnnealingHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func geneticHandler(w http.ResponseWriter, r *http.Request){
+	vars := mux.Vars(r)
+	nPopulationStr := vars["nPopulation"]
+	nIterationStr := vars["nIteration"]
+	var nPopulation, nIteration int          
+
+	_, err := fmt.Sscanf(nPopulationStr, "%d", &nPopulation)
+	if err != nil {
+		http.Error(w, "Invalid number", http.StatusBadRequest)
+		return
+	}
+
+	_, err = fmt.Sscanf(nIterationStr, "%d", &nIteration)
+	if err != nil {
+		http.Error(w, "Invalid number", http.StatusBadRequest)
+		return
+	}
+
+	data := GeneticAlgorithm(nPopulation,nIteration)
+
+	w.Header().Set("Content-Type","application/json")
+
+	if err := json.NewEncoder(w).Encode(data); err != nil{
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
+
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	r := mux.NewRouter()
 	r.HandleFunc("/", helloHandler)
 	r.HandleFunc("/steepest-ascent", SteepestAscentHandler)
 	r.HandleFunc("/sideways-move/{maxSideway}", sidewaysMoveHandler)
 	r.HandleFunc("/stochastic", stochasticHandler)
 	r.HandleFunc("/simulated-annealing", simulatedAnnealingHandler)
+	r.HandleFunc("/genetic-algo/{nPopulation}/{nIteration}", geneticHandler)
 
 	fmt.Println("Starting server on :8080")
 	err := http.ListenAndServe(":8080", r)
