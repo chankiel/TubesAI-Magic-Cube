@@ -21,12 +21,12 @@ ChartJS.register(
   Legend
 );
 
-const PlotChart = ({ array }) => {
+const PlotChart = ({ array, infoX, infoY }) => {
   const data = {
     labels: array.map((_, index) => index + 1),
     datasets: [
       {
-        label: "Graph Plot",
+        label: infoY,
         data: array,
         fill: false,
         borderColor: "rgba(75, 192, 192, 1)",
@@ -44,7 +44,21 @@ const PlotChart = ({ array }) => {
       },
       title: {
         display: true,
-        text: "Line Chart Example",
+        text: "Value Graph",
+      },
+    },
+    scales: {
+      x: {
+        title: {
+          display: true,
+          text: infoX,
+        },
+      },
+      y: {
+        title: {
+          display: true,
+          text: infoY,
+        },
       },
     },
   };
