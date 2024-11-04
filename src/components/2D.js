@@ -84,10 +84,13 @@ const D2 = ({ array, idx1, idx2, valAr }) => {
           Step {currentLayer + 1}
         </div>
       </div>
-
-      <div className="flex justify-center mb-4">
-        <div className="text-white font-bold">Value: {valAr[currentLayer]}</div>
-      </div>
+      {valAr && (
+        <div className="flex justify-center mb-4">
+          <div className="text-white font-bold">
+            Value: {valAr[currentLayer]}
+          </div>
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-wrap sm:flex-row justify-center gap-4">
         {chunks.map((chunk, chunkIndex) => (
