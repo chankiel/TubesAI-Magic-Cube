@@ -68,8 +68,11 @@ const D2 = ({ array, idx1, idx2, valAr }) => {
     chunks.push(currentGrid.slice(i * 25, i * 25 + 25));
   }
 
-  const curI1 = idx1[currentLayer - 1];
-  const curI2 = idx2[currentLayer - 1];
+  const curI1 = idx1[currentLayer];
+  const curI2 = idx2[currentLayer];
+
+  const curII1 = idx1[currentLayer - 1];
+  const curII2 = idx2[currentLayer - 1];
 
   return (
     <div
@@ -103,6 +106,9 @@ const D2 = ({ array, idx1, idx2, valAr }) => {
                     chunkIndex * 25 + index === curI1 ||
                     chunkIndex * 25 + index === curI2
                       ? "bg-red-500"
+                      : chunkIndex * 25 + index === curII1 ||
+                        chunkIndex * 25 + index === curII2
+                      ? "bg-green-500"
                       : "bg-gray-800"
                   }`}
                 >
